@@ -7,6 +7,8 @@
 #include "textures.hpp"
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include "bossfight.hpp"
+#include <iostream>
 #include <queue>
 /**
  *
@@ -151,19 +153,7 @@ class breakout : public windowed_app {
   // boss fight
   void prep_fight();
   void tick_fight(int time_diff);
-  void tick_fight_intro(int time_diff);
-  void tick_fight_fight(int time_diff);
-  void tick_fight_death(int time_diff);
   void draw_fight();
-  void draw_fight_intro();
-  void draw_fight_fight();
-  void draw_fight_death();
-  enum FIGHT_STAGES { INTRO, // intro sequene, no fighting yet
-                      FIGHT, // fighting
-                      DEATH  // boss is dead, animation.. go to WAIT
-  };
-  FIGHT_STAGES current_fight_stage = INTRO;
-  long unsigned int anim_timer = 0;
 
   // powerups
   int interval_time = 200;
@@ -180,15 +170,20 @@ class breakout : public windowed_app {
     int score;
     score_struct(std::string name, int score) : name(name), score(score) {}
   };
+  friend std::ostream &operator<<(std::ostream &os, const score_struct &s) {
+    os << s.name << " " << s.score << "\n";
+    return os;
+  }
   static bool score_compare(score_struct i, score_struct j);
   std::vector<score_struct> hold;
   int player_index = -1;
   bool name_entered = false;
   std::string player_name = "";
+  int score_blink_ticks = 1000;
   void draw_gameover();
   void tick_gameover(int time_diff);
   long ticks_since_show = 0;
-  long max_ticks = 5000;
+  long max_ticks = 10000;
   int score_ticks = 400;
   bool finished = false;
   float gameover_hold_score = 0;
@@ -205,6 +200,11 @@ public:
   void add_ball(ball *b) { balls.push_back(b); }
   std::vector<board> &get_boards() { return boards; };
   cairo_t *get_cr() { return cr; }
+
+  bool *get_key_pressed() { return key_pressed; };
+  bool *get_key_tap() { return key_tap; };
+
+  int get_lives() { return lives; };
 
   float game_speed = 0.010;
 
@@ -224,4 +224,7 @@ public:
 
   // sounds
   sound::sound_cloud main_cloud;
+
+  // bossfight
+  bossfight::boss_container *boss_cont = nullptr;
 };

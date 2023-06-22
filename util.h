@@ -1,6 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 #include "breakout.h"
+#include <cmath>
 enum Intersection { NONE,
                     ONE,
                     INFINITE };

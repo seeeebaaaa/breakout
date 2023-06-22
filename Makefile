@@ -13,8 +13,8 @@ ifeq ($(shell uname -s),Darwin)
 	LDFLAGS+= -framework CoreFoundation -framework CoreAudio -framework AudioToolbox
 endif
 
-SOURCE = main.cpp gui.cpp breakout.cpp util.cpp power_ups.cpp textures.cpp miniaudio.c sound.cpp
-HEADER = gui.h breakout.h breakout_config.h util.h power_ups.hpp textures.hpp miniaudio_extra.h sound.hpp
+SOURCE = main.cpp gui.cpp breakout.cpp util.cpp power_ups.cpp textures.cpp miniaudio.c sound.cpp bossfight.cpp
+HEADER = gui.h breakout.h breakout_config.h util.h power_ups.hpp textures.hpp miniaudio_extra.h sound.hpp bossfight.hpp
 OBJECT = $(SOURCE:%.cpp=%.o)
 
 %.o: %.cpp $(HEADER)
@@ -30,8 +30,9 @@ dist:
 	tar cfz breakout1_ada.tar.gz breakout1_ada/
 	
 # counts the number of lines in this project
-lines: main.cpp gui.cpp breakout.cpp util.cpp power_ups.cpp textures.cpp sound.cpp gui.h breakout.h breakout_config.h util.h power_ups.hpp textures.hpp sound.hpp
-	cat main.cpp gui.cpp breakout.cpp util.cpp power_ups.cpp textures.cpp sound.cpp gui.h breakout.h breakout_config.h util.h power_ups.hpp textures.hpp sound.hpp | wc -l
+ALL_FILES =  main.cpp breakout.cpp util.cpp power_ups.cpp textures.cpp sound.cpp bossfight.cpp breakout.h breakout_config.h util.h power_ups.hpp textures.hpp sound.hpp bossfight.hpp
+lines: $(ALL_FILES)
+	cat $(ALL_FILES) | wc -l
 
 clean:
 	rm -rf breakout1

@@ -1,5 +1,6 @@
 #include "util.h"
 #include "breakout.h"
+#include <cmath>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -67,13 +68,13 @@ void draw_text_centered(cairo_t *cr, int x, int y, int size, const std::string &
     if (underline) {
       switch (align) {
       case CENTER:
-        cairo_move_to(cr, x - te.x_advance / 2, y + te.height * 0.45);
+        cairo_move_to(cr, x - te.x_advance / 2, y + te.height / 2 - (size / 4));
         break;
       case LEFT:
-        cairo_move_to(cr, x, y + te.height * 0.45);
+        cairo_move_to(cr, x, y + te.height / 2 - (size / 4));
         break;
       case RIGHT:
-        cairo_move_to(cr, x - te.x_advance, y + te.height * 0.45);
+        cairo_move_to(cr, x - te.x_advance, y + te.height / 2 - (size / 4));
         break;
       }
       cairo_rel_line_to(cr, te.x_advance, 0);
@@ -84,13 +85,13 @@ void draw_text_centered(cairo_t *cr, int x, int y, int size, const std::string &
     if (underline) {
       switch (align) {
       case CENTER:
-        cairo_move_to(cr, x - te.x_advance / 2, y + te.height * 0.45);
+        cairo_move_to(cr, x - te.x_advance / 2, y + te.height / 2 - (size / 10));
         break;
       case LEFT:
-        cairo_move_to(cr, x, y + te.height * 0.45);
+        cairo_move_to(cr, x, y + te.height / 2 - (size / 10));
         break;
       case RIGHT:
-        cairo_move_to(cr, x - te.x_advance, y + te.height * 0.45);
+        cairo_move_to(cr, x - te.x_advance, y + te.height / 2 - (size / 10));
         break;
       }
       cairo_rel_line_to(cr, te.x_advance, 0);

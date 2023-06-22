@@ -35,6 +35,8 @@ breakout::breakout(int w, int h)
   main_cloud.set_sound("./assets/audio/ball_release.wav", 1);
   main_cloud.set_sound("./assets/audio/ball_hit.wav", 10);
   main_cloud.set_sound("./assets/audio/block_destruction.wav", 5);
+  main_cloud.set_sound("./assets/audio/fall_Down.wav", 1);
+  main_cloud.set_sound("./assets/audio/bosses/phantom/theme.mp3", 1, true);
 }
 
 breakout::~breakout() {
@@ -137,6 +139,8 @@ void breakout::draw() {
     draw_wait();
   } else if (state == PLAY) {
     draw_play();
+  } else if (state == BOSSFIGHT) {
+    draw_fight();
   } else if (state == GAMEOVER) {
     draw_gameover();
   }
@@ -201,11 +205,11 @@ void breakout::draw_init() {
       draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 190, 25, "direction can be adjusted with 'w'", pixel_font, LEFT);
       draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 220, 25, "and 's'.", pixel_font, LEFT);
       // example pic:
-      float scale = 1;
-      cairo_scale(cr, scale, scale);
-      tex_hub.get_or_create_texel("cat", "assets/cat.png")->texel_set_source_surface(cr, width / 2, height * 5.0 / 8, scale, scale);
-      cairo_paint(cr);
-      cairo_scale(cr, 1 / scale, 1 / scale);
+      draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 270, 25, "The board can give the ball a", pixel_font, LEFT);
+      draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 300, 25, "drift, if you hit the ball while", pixel_font, LEFT);
+      draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 330, 25, "the board is moving.  aThis can be", pixel_font, LEFT);
+      draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 360, 25, "used to change the direction of the", pixel_font, LEFT);
+      draw_text_centered(cr, left_bound, height * 2.0 / 8 + 30 + 390, 25, "ball.", pixel_font, LEFT);
       cairo_set_source_rgb(cr, 1, 1, 1);
       // page nav
       draw_text_centered(cr, width / 2, height * 7 / 8 - 20, 20, "--1-- ", pixel_font, CENTER);
@@ -296,16 +300,17 @@ void breakout::draw_init() {
       draw_text_centered(cr, left_bound, height / 8 + 130, 25, "Once you run out of blocks you will", pixel_font, LEFT);
       draw_text_centered(cr, left_bound, height / 8 + 160, 25, "have to fight a boss to keep going", pixel_font, LEFT);
       draw_text_centered(cr, left_bound, height / 8 + 190, 25, "and restore all blocks.", pixel_font, LEFT);
-      draw_text_centered(cr, left_bound, height / 8 + 230, 25, "Phantomatrix", pixel_font, LEFT, true, true);
+      draw_text_centered(cr, left_bound, height / 8 + 230, 25, "Phantom", pixel_font, LEFT, true, true);
       draw_text_centered(cr, left_bound, height / 8 + 260, 25, "The one and only current boss.", pixel_font, LEFT);
       draw_text_centered(cr, left_bound, height / 8 + 290, 25, "Act like youre scared!", pixel_font, LEFT);
       // boss pick
-      float scale = 1;
+      float scale = 0.4;
       cairo_scale(cr, scale, scale);
-      tex_hub.get_or_create_texel("cat", "assets/cat.png")->texel_set_source_surface(cr, width / 2, height * 5.0 / 8, scale, scale);
+      tex_hub.get_or_create_texel("boss-phantom_main", "./assets/bosses/phantom/main.png")->texel_set_source_surface(cr, width / 2, height * 5.0 / 8 + 5 - get_circle_radius(ani_score, 1500, 1, 10), scale, scale);
       cairo_paint(cr);
       cairo_scale(cr, 1 / scale, 1 / scale);
       cairo_set_source_rgb(cr, 1, 1, 1);
+      draw_text_centered(cr, left_bound, height / 8 + 570, 25, "Music:  Digifunk by DivKid", pixel_font, LEFT);
       // page nav
       draw_text_centered(cr, width / 4 + 15, height * 7 / 8 - 20, 20, "< [press a]", pixel_font, LEFT);
       draw_text_centered(cr, width / 2, height * 7 / 8 - 20, 20, "--3-- ", pixel_font, CENTER);
@@ -400,18 +405,8 @@ void breakout::draw_play() {
 }
 
 void breakout::draw_fight() {
-  if (current_fight_stage == INTRO) {
-    draw_fight_intro();
-  } else if (current_fight_stage == FIGHT) {
-    draw_fight_fight();
-  } else if (current_fight_stage == DEATH) {
-    draw_fight_death();
-  }
+  boss_cont->hold->draw(cr);
 }
-
-void breakout::draw_fight_intro() {}
-void breakout::draw_fight_fight() {}
-void breakout::draw_fight_death() {}
 
 void breakout::draw_gameover() {
   // own score
@@ -426,7 +421,7 @@ void breakout::draw_gameover() {
 
   // scorebaord
   cairo_set_source_rgba(cr, 0, 0, 0, 0.6);
-  cairo_rectangle(cr, width / 4, height / 2, width * .5, height / 3);
+  cairo_rectangle(cr, width / 4, height / 2 - 10, width * .5, (height / 3) * 0.9);
   cairo_fill(cr);
   cairo_set_source_rgb(cr, 1, 1, 1);
   draw_text_centered(cr, width / 2, height / 2 + 30, 40, "Scoreboard", pixel_font, CENTER, true, true);
@@ -439,6 +434,22 @@ void breakout::draw_gameover() {
 
     draw_text_centered(cr, width * 3.0 / 4 - 50, height / 2 + 70 + (40 * i), 30, std::to_string(s.score), pixel_font, RIGHT, true, false);
     i++;
+  }
+
+  // enter name
+  if (player_index >= 0 && !name_entered) {
+    int cent_x = width / 2, cent_y = height * .9;
+    cairo_set_source_rgba(cr, .3, 0.3, .5, 0.8);
+    cairo_rectangle(cr, cent_x - 140, cent_y - 150 / 2, 280, 120);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    draw_text_centered(cr, cent_x, cent_y - 40, 40, "Enter your name:", pixel_font, CENTER);
+    draw_text_centered(cr, cent_x, cent_y + 35, 15, "(press enter)", pixel_font, CENTER);
+    cairo_set_source_rgba(cr, 0.3, 0.5, 0.3, 0.7);
+    cairo_rectangle(cr, cent_x - 105, cent_y - 20, 210, 40);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    draw_text_centered(cr, cent_x, cent_y + 10, 40, player_name + (score_blink_ticks < 500 && player_name.size() < 10 ? "|" : ""), pixel_font, CENTER);
   }
 }
 
@@ -686,6 +697,7 @@ void breakout::tick_play(int time_diff) {
     }
     if (!b->check_collision(*this, time_diff)) {
       lives--;
+      main_cloud.play_sound("./assets/audio/fall_Down.wav", 1, .8 + random_number(0, .4), 0);
       if (lives == 0) {
         prep_gameover();
         state = GAMEOVER;
@@ -721,26 +733,34 @@ void breakout::tick_play(int time_diff) {
     at_least_one_alive |= !b->hidden;
   }
   if (!at_least_one_alive) {
+    prep_fight();
     state = BOSSFIGHT;
   }
 }
 
-void breakout::prep_fight() {}
+void breakout::prep_fight() {
 
-void breakout::tick_fight(int time_diff) {
-  anim_timer += time_diff; // plus aniamtion score
-  if (current_fight_stage == INTRO) {
-    tick_fight_intro(time_diff);
-  } else if (current_fight_stage == FIGHT) {
-    tick_fight_fight(time_diff);
-  } else if (current_fight_stage == DEATH) {
-    tick_fight_death(time_diff);
-  }
+  std::cout << "PREP FIGHT" << std::endl;
+  boss_cont = new bossfight::boss_container();
+  boss_cont->summon_boss(this);
 }
 
-void breakout::tick_fight_intro(int time_diff) {}
-void breakout::tick_fight_fight(int time_diff) {}
-void breakout::tick_fight_death(int time_diff) {}
+void breakout::tick_fight(int time_diff) {
+  boss_cont->hold->tick(time_diff);
+  if (boss_cont->hold->finished) {
+    std::cout << "Done!" << std::endl;
+    restore_game();
+    for (block *b : blocks) {
+      b->hidden = false;
+      b->lives = BREAKOUT_BLOCK_MAX_LIVES;
+    }
+    state = WAIT;
+    if (lives <= 0) {
+      prep_gameover();
+      state = GAMEOVER;
+    }
+  }
+}
 
 bool breakout::score_compare(score_struct i, score_struct j) { return (i.score > j.score); }
 
@@ -792,21 +812,39 @@ void breakout::tick_gameover(int time_diff) {
 
   // if score good, enter name
   if (player_index >= 0 && !name_entered) {
+    score_blink_ticks -= time_diff;
+    if (score_blink_ticks <= 0)
+      score_blink_ticks = 1000;
+
     // pressed enter write name to file
     if (key_pressed[13]) {
-      hold[player_index].name = player_name;
-      name_entered = true;
-      std::cout << "name is: " << player_name << std::endl;
+      if (player_name.size() > 0) {
+        hold[player_index].name = player_name;
+        name_entered = true;
+        std::cout << "name is: " << player_name << std::endl;
+        // save names to file
+        std::ofstream file("scoreboard");
+        for (score_struct s : hold)
+          file << s;
+        file.close();
+      } else
+        main_cloud.play_sound("./assets/audio/ui_wrong.wav", 1, 1, 0);
     }
     // check for key press and add to string otherwise
     int i = 0;
     for (bool b : key_tap) {
       if (b) {
-        if (player_name.size() > 10) {
+
+        if (i == 8) { // backspace
+          if (player_name.size() > 0)
+            player_name.pop_back();
+          else
+            main_cloud.play_sound("./assets/audio/ui_wrong.wav", 1, 1, 0);
+        } else if (player_name.size() == 10) {
           // too long
           main_cloud.play_sound("./assets/audio/ui_wrong.wav", 1, 1, 0);
           std::cout << "name too long" << std::endl;
-        } else if (i >= 'a' && i <= 'z') {
+        } else if ((i >= 'a' && i <= 'z') || ((i >= 'A' && i <= 'Z') || (i >= '0' && i <= '9'))) {
           main_cloud.play_sound("./assets/audio/ui_right.wav", 1, 1, 0);
           player_name += char(i);
         }
@@ -1036,7 +1074,14 @@ bool ball::check_collision(breakout &game, int time_diff) {
       break;
     }
   }
+
+  // powerup collision
   game.pu_container->collision(this);
+
+  // boss collision
+  if (game.boss_cont && game.boss_cont->hold) {
+    game.boss_cont->hold->collision(this);
+  }
 
   return true;
 }

@@ -53,6 +53,12 @@ void sound_cloud::sound_container::play_sound(double volume, double pitch, doubl
   }
 }
 
+void sound_cloud::sound_container::stop_sound() {
+  for (int i = 0; i < max_instances; i++) {
+    ma_sound_stop(&instance_container[i]);
+  }
+}
+
 sound_cloud::sound_container::~sound_container() {
   for (int i = 0; i < max_instances; i++) {
     ma_sound_uninit(&instance_container[i]);
@@ -70,13 +76,23 @@ sound_cloud::sound_cloud() {
 }
 
 // needs to be called at least once to inititialize a sound from file.
-void sound_cloud::set_sound(std::string path, unsigned max_at_once) {
+void sound_cloud::set_sound(std::string path, unsigned max_at_once, bool ignore) {
   // check if sound already exists
   if (container.find(path) != container.end()) {
-    std::cout << "\e[31;1mERROR: key already exists when getting\e[0m" << std::endl;
-    throw new std::runtime_error("SOUND: <set_sound> Key " + path + " already exists.");
+    if (!ignore) {
+      std::cout << "\e[31;1mERROR: key already exists when setting\e[0m" << std::endl;
+      throw new std::runtime_error("SOUND: <set_sound> Key " + path + " already exists.");
+    } else
+      return;
   }
   container[path] = new sound_container(path, max_at_once, this);
+}
+
+void sound_cloud::stop_sound(std::string path) {
+  // check if sound  exists
+  if (container.find(path) != container.end()) {
+    container[path]->stop_sound();
+  }
 }
 
 // play a sound, after setting it at least once

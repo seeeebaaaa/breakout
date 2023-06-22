@@ -20,7 +20,7 @@ class sound_cloud {
 
     sound_container(std::string path, unsigned max_instances, sound_cloud *sc_owner);
     void play_sound(double volume, double pitch, double pan);
-    // void set_sound();
+    void stop_sound();
     ~sound_container();
   };
   friend std::ostream &operator<<(std::ostream &os, const sound_container &t);
@@ -37,8 +37,9 @@ class sound_cloud {
 
 public:
   sound_cloud();
-  void set_sound(std::string path, unsigned max_at_once);                     // max at once are the number of sounds from this file that can be played at once. Each one has its own allocated space, so be careful
-  void play_sound(std::string path, double volume, double pitch, double pan); // plays the sound; handles instance amnagement with multplie palying sounds
+  void set_sound(std::string path, unsigned max_at_once, bool ignore = false); // max at once are the number of sounds from this file that can be played at once. Each one has its own allocated space, so be careful
+  void play_sound(std::string path, double volume, double pitch, double pan);  // plays the sound; handles instance amnagement with multplie palying sounds
+  void stop_sound(std::string path);
   ~sound_cloud();
 };
 

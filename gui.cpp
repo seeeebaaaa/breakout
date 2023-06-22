@@ -97,6 +97,7 @@ windowed_app::windowed_app(int w, int h, const std::string &name) : width(w), he
 
   for (bool &c : key_pressed)
     c = false;
+  gtk_window_set_resizable(GTK_WINDOW(window), false);
 }
 
 void windowed_app::run() {
