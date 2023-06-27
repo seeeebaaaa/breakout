@@ -844,7 +844,7 @@ void breakout::tick_gameover(int time_diff) {
           // too long
           main_cloud.play_sound("./assets/audio/ui_wrong.wav", 1, 1, 0);
           std::cout << "name too long" << std::endl;
-        } else if ((i >= 'a' && i <= 'z') || ((i >= 'A' && i <= 'Z') || (i >= '0' && i <= '9'))) {
+        } else if ((i >= 'a' && i <= 'z') || ((i >= 'A' && i <= 'Z') || (i >= '0' && i <= '9')) || (i == '_')) {
           main_cloud.play_sound("./assets/audio/ui_right.wav", 1, 1, 0);
           player_name += char(i);
         }
