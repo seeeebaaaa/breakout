@@ -527,7 +527,7 @@ void phantom::tick_fight(int time_diff) {
       warp_pos[0] = random_number(game->get_width() * 0.2, game->get_width() * 0.8);
       warp_pos[1] = random_number(game->get_height() * 0.2, game->get_height() * 0.8);
       game->main_cloud.play_sound("./assets/audio/bosses/phantom/appear.wav", 1, 1 + (0.2 - random_number(0, 0.4)), 0);
-      played_once = true;
+      played_once = false;
       lit_eyes = true;
     }
     if (current_ability_lifetime <= 1000) {
@@ -558,7 +558,7 @@ void phantom::tick_fight(int time_diff) {
   case 2: // focus ball - speed
     if (current_ability_lifetime == 0) {
       // init
-      multiplier = random_number(2, 3.5);
+      multiplier = random_number(2, 3);
       org_speed = game->get_balls().front()->speed;
       col[0] = 18.0 / 255;
       col[1] = 97.0 / 255;

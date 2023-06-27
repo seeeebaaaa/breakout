@@ -149,7 +149,7 @@ struct power_up_housing {
 
 struct power_up_container {
   // init with gane, power up counts at once, and either nllptr [random] or powerup coords
-  power_up_container(breakout *game, int max_powerups, int place_count, int nr_of_places = 0, int places[nr_of_places][2] = nullptr);
+  power_up_container(breakout *game, int max_powerups, int place_count, int nr_of_places = 0, int places[6][2] = nullptr); // nr of places should be first para of places, instead of the 6, but g++ complains
 
   void collision(ball *b); // goes through powerups;
   void new_random_powerup();

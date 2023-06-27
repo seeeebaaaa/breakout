@@ -589,7 +589,7 @@ powerup::parent *powerup::random_powerup(breakout *game) {
  * POWER UP CONTAINER
  */
 
-powerup::power_up_container::power_up_container(breakout *game, int max_powerups, int place_count, int nr_of_places, int places[nr_of_places][2]) {
+powerup::power_up_container::power_up_container(breakout *game, int max_powerups, int place_count, int nr_of_places, int places[6][2]) {
   this->game = game;
   this->max_powerups = max_powerups;
   this->place_count = place_count;
@@ -649,6 +649,7 @@ void powerup::power_up_container::tick(int time_diff) {
   }
   if (ticks_until_next_pu <= 0) {
     ticks_until_next_pu = interval_time * (1.5 + random_number());
+    std::cout<<"Next Powerup in "<<ticks_until_next_pu<<" ticks!"<<std::endl;
     // new powerup
     if (free_space) {
       new_random_powerup();
