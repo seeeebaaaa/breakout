@@ -11,8 +11,8 @@
 #define BREAKOUT_DEBUG_SHOW_FPS
 // #define DEBUG_PRINT_KEYS // prints keys to console
 // cells:
-#define BREAKOUT_CELLS_X 6
-#define BREAKOUT_CELLS_Y 6
+#define BREAKOUT_CELLS_X 1
+#define BREAKOUT_CELLS_Y 1
 #define BREAKOUT_BORDER 0.1
 #define BREAKOUT_BLOCK_MAX_LIVES 3
 
