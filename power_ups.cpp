@@ -3,8 +3,8 @@
 #include "gui.h"
 #include "util.h"
 #include <cassert>
+#include <cmath>
 #include <iostream>
-
 /**
  * PARENT
  */
@@ -199,8 +199,8 @@ powerup::black_hole::~black_hole() {
 }
 
 void powerup::black_hole::tick(int tick_offset) {
-  lifetime++;
-  collision_radius = get_circle_radius(lifetime, 300, 1, 20);
+  lifetime += tick_offset;
+  collision_radius = get_circle_radius(lifetime, 2000, 1, 20);
   if (state > IDLE) {
     if (state == PULL) {
       if (distance_between_points(x, y, affected_ball->x, affected_ball->y) <= 2 || max_tries <= 0) {
@@ -218,13 +218,13 @@ void powerup::black_hole::tick(int tick_offset) {
 
     } else if (state == SPIN) {
       // spin ti desired direction
-      spin_angle += ((float)spin_time / spin_time_max) * 0.1f * M_PI;
+      spin_angle += ((float)spin_time / spin_time_max) * 0.1f * M_PI * (tick_offset * 0.1);
       // std::cout << "Angle: " << spin_angle << " (addition: " << (float)(1.0 / 10.0) * M_PI << ")" << std::endl;
       if (spin_time <= 0) {
         game->main_cloud.play_sound("./assets/audio/power_ups/blackhole_shoot.wav", 1, 1, 0);
         state = SHOOT;
       }
-      spin_time--;
+      spin_time -= tick_offset;
     } else if (state == SHOOT) {
       // shoot the ball
 
@@ -235,7 +235,7 @@ void powerup::black_hole::tick(int tick_offset) {
       state = SLOWDOWN;
     } else if (state == SLOWDOWN) {
       if (affected_ball->speed > original_speed) {
-        affected_ball->speed *= 0.99;
+        affected_ball->speed *= powf(0.99, tick_offset / 10.0);
       } else
         deactivate();
     }
@@ -649,7 +649,7 @@ void powerup::power_up_container::tick(int time_diff) {
   }
   if (ticks_until_next_pu <= 0) {
     ticks_until_next_pu = interval_time * (1.5 + random_number());
-    std::cout<<"Next Powerup in "<<ticks_until_next_pu<<" ticks!"<<std::endl;
+    std::cout << "Next Powerup in " << ticks_until_next_pu << " ticks!" << std::endl;
     // new powerup
     if (free_space) {
       new_random_powerup();

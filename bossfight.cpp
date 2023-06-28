@@ -675,7 +675,6 @@ void phantom::tick_death(int time_diff) {
   }
   // sink down
   if (lifetime > 3500 && lifetime <= 7500) {
-    std::cout << "y: " << y << ", org_y: " << org_y << ", pow: " << powf(1.00015, lifetime - 3500) << ", x: " << powf(game->get_height() / org_y, 1.0 / (7500 - 3500)) << std::endl;
     y = org_y * powf(powf((game->get_height() + 200) / org_y, 1.0 / (7500 - 3500)), lifetime - 3500);
   }
 

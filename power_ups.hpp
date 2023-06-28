@@ -76,7 +76,7 @@ struct black_hole : public parent {
                SLOWDOWN };
   STATE state = IDLE;
   float pull_dir[2];
-  int spin_time_max = 250;
+  int spin_time_max = 250 * 5;
   int spin_time = spin_time_max;
   float spin_angle;
   int indicator_length = 50;
