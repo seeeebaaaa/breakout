@@ -1,8 +1,8 @@
 all: breakout
 CC = g++
 CXXFLAGS = -std=c++20 -g -O0
-CPPFLAGS = $(shell pkg-config --cflags gtk+-3.0) $(shell libpng-config --cflags ) $(shell pkg-config --cflags freetype2)
-LDFLAGS  = $(shell pkg-config --libs gtk+-3.0) $(shell libpng-config --ldflags ) $(shell pkg-config --libs freetype2) 
+CPPFLAGS = $(shell pkg-config --cflags gtk+-3.0) $(shell pkg-config --cflags freetype2)
+LDFLAGS  = $(shell pkg-config --libs gtk+-3.0) $(shell pkg-config --libs freetype2) 
 
 # for miniaudio
 ifeq ($(shell uname -s),Linux)
