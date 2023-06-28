@@ -28,7 +28,6 @@ breakout::breakout(int w, int h)
   }
   pixel_font = cairo_ft_font_face_create_for_ft_face(ft_face, 0);
 
-  main_cloud.set_sound("./assets/audio/pickupCoin.wav", 1);
   main_cloud.set_sound("./assets/audio/black_out.wav", 1);
   main_cloud.set_sound("./assets/audio/ui_right.wav", 2);
   main_cloud.set_sound("./assets/audio/ui_wrong.wav", 2);
@@ -99,7 +98,7 @@ void breakout::draw_debug_fps() {
   for (int i = 0; i < last_frame_time.size(); i++) {
     sum += last_frame_time[i];
   }
-  draw_text_centered(cr, 20, height - 10, 10, std::to_string(1000 * last_frame_time.size() / sum) + "  fps",pixel_font);
+  draw_text_centered(cr, 20, height - 10, 10, std::to_string(1000 * last_frame_time.size() / sum) + "  fps", pixel_font);
 
   cairo_restore(cr);
 }
@@ -413,11 +412,11 @@ void breakout::draw_gameover() {
   cairo_set_source_rgb(cr, 1, 0, 0);
   draw_circle(cr, width / 2, height / 3, 70 + (get_circle_radius(ticks_since_show, 180, 1, 10) - 5));
   cairo_set_source_rgb(cr, 1, 1, 1);
-  draw_text_centered(cr, width / 2, height / 3 - 90, 30, "Your score",pixel_font);
+  draw_text_centered(cr, width / 2, height / 3 - 90, 30, "Your score", pixel_font);
   cairo_set_source_rgb(cr, .5, .6, .7);
   int score_to_be_shown = (ticks_since_show <= score_ticks) ? powf((float)ticks_since_show / score_ticks, 2) * (float)score : score;
   int size = 28 + ((ticks_since_show <= score_ticks) ? (get_circle_radius(ticks_since_show, 18, 1, 6) - 3) : 0);
-  draw_text_centered(cr, width / 2, height / 3 + 3, size, std::to_string(score_to_be_shown),pixel_font);
+  draw_text_centered(cr, width / 2, height / 3 + 3, size, std::to_string(score_to_be_shown), pixel_font);
 
   // scorebaord
   cairo_set_source_rgba(cr, 0, 0, 0, 0.6);
@@ -1006,7 +1005,7 @@ void ball::step(float gamespeed) {
 bool ball::check_collision(breakout &game, int time_diff) {
   // wall collision
   if (x >= game.get_width()) {
-    direction(-dx, dy,true);
+    direction(-dx, dy, true);
     position(last_good_x, last_good_y);
     last_hit = nullptr;
     game.main_cloud.play_sound("./assets/audio/ball_hit.wav", 1, 1, 0);
